@@ -28,7 +28,7 @@ if (config['log'] is not False):
 def log_event(addr, username, password):
     if (log_pipe is not None):
         try:
-            log_pipe.write('\t'.join([time.strftime('%b %d %Y %H:%M:%S'), addr, username, password]) + '\n')
+            log_pipe.write('\t'.join([time.strftime('%b-%d-%Y %H:%M:%S'), addr, username, password]) + '\n')
             log_pipe.flush()
         except Exception as e:
             raise e
