@@ -1,0 +1,4 @@
+[sshf]
+port    = 8222
+logpath = /home/jack/git/FakeSSH/data/log
+enabled = true
