@@ -23,4 +23,4 @@ sudo sed -i 's#<.*>#'$(pwd)'#g' /etc/supervisor/conf.d/ssh.conf
 sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 8222
 ```
 
-See also '[README.markdown](https://github.com/tylermenezes/FakeSSH#use)'
+See also '[README.md.orin](https://github.com/tylermenezes/FakeSSH#use)'
