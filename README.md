@@ -1,4 +1,5 @@
-### Fake SSH (forked from [tylermenezes/FakeSSH](https://github.com/tylermenezes/FakeSSH))
+# Fake SSH
+Forked from [tylermenezes/FakeSSH](https://github.com/tylermenezes/FakeSSH)
 
 ### What's new
 * Add conf for `supervisor`
@@ -7,6 +8,7 @@
 ### Usage
 ```sh
 # checkout code and enter work directory
+git clone https://github.com/QwertyJack/FakeSSH.git
 cd FakeSSH
 
 # copy config according to your need
@@ -23,4 +25,4 @@ sudo sed -i 's#<.*>#'$(pwd)'#g' /etc/supervisor/conf.d/ssh.conf
 sudo iptables -t nat -A PREROUTING -p tcp --dport 22 -j REDIRECT --to-port 8222
 ```
 
-See also '[README.md.orin](https://github.com/tylermenezes/FakeSSH#use)'
+See also '[README.md.orig](https://github.com/tylermenezes/FakeSSH#use)'
