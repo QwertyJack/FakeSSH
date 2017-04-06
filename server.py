@@ -1,17 +1,17 @@
 #!/usr/bin/env python
 
-import base64
 from binascii import hexlify
+import base64
+import grp
+import json
 import os
+import paramiko
+import pwd
 import socket
 import sys
 import threading
-import traceback
-import paramiko
-import json
 import time
-import pwd
-import grp
+import traceback
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 raw_config = open('data/config.json').read()
@@ -25,17 +25,18 @@ if (config['log'] is not False):
     log_pipe = open(config['log'], "a")
 
 
-def log_event(event_type, data = None):
+def log_event(addr, username, password):
     if (log_pipe is not None):
         try:
-            log_pipe.write(str(int(time.time())) + "\t" + event_type + "\t" + str(data) + "\n")
+            log_pipe.write('\t'.join([time.strftime('%b %d %Y %H:%M:%S'), addr, username, password]) + '\n')
             log_pipe.flush()
-        except:
-            pass
+        except Exception as e:
+            raise e
 
 
 class Server(paramiko.ServerInterface):
-    def __init__(self):
+    def __init__(self, addr):
+        self.addr = addr;
         self.event = threading.Event()
         self.has_authenticated_before = False
 
@@ -48,20 +49,16 @@ class Server(paramiko.ServerInterface):
         if self.has_authenticated_before:
             return paramiko.AUTH_FAILED
         else:
-            log_event('a_inter')
             self.has_authenticated_before = True
             return paramiko.InteractiveQuery('', config['banner'])
 
     def check_auth_password(self, username, password):
-        log_event('a_password')
-        log_event('username', username)
-        log_event('password', password)
+        log_event(addr[0], username, password)
         time.sleep(3)
         return paramiko.AUTH_FAILED
 
     def check_auth_publickey(self, username, key):
-        log_event('a_pkey')
-        time.sleep(3)
+        time.sleep(1)
         return paramiko.AUTH_FAILED
 
     def check_auth_interactive_response(self, responses):
@@ -79,7 +76,7 @@ class Server(paramiko.ServerInterface):
         return True
 
 
-def incoming_connection(client):
+def incoming_connection(client, addr):
     try:
         t = paramiko.Transport(client)
         t.local_version = 'SSH-2.0-OpenSSH_4.3'
@@ -92,7 +89,7 @@ def incoming_connection(client):
             raise
 
         # Start the server & negotiate with the client
-        server = Server()
+        server = Server(addr)
         t.add_server_key(host_key)
         try:
             t.start_server(server=server)
@@ -100,16 +97,16 @@ def incoming_connection(client):
             print('SSH negotiation failed.')
             try:
                 t.close()
-            except:
-                pass
+            except Exception as e:
+                raise e
             return
 
         # Wait for auth
         t.accept(60)
         try:
             t.close()
-        except:
-            pass
+        except Exception as e:
+            raise e
         return
 
     except Exception as e:
@@ -117,8 +114,8 @@ def incoming_connection(client):
         traceback.print_exc()
         try:
             t.close()
-        except:
-            pass
+        except Exception as e:
+            raise e
         return
 
 # Bind to the port
@@ -144,11 +141,10 @@ server_listening = True
 while server_listening:
     try:
         sock.listen(100)
-        print('Waiting for connection.')
+        print('Start.')
         client, addr = sock.accept()
 
-        print('Client connected!')
-        threading.Thread(target=incoming_connection, args=[client]).start()
+        threading.Thread(target=incoming_connection, args=[client, addr]).start()
     except Exception as e:
         print("Couldn't wait for connection: " + str(e))
         traceback.print_exc()

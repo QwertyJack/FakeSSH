@@ -1,0 +1,6 @@
+{
+    "log": "data/log",
+    "key": "data/rsa",
+    "port": 8222,
+    "banner": ""
+}
