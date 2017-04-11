@@ -19,7 +19,7 @@ cp data/config.json.sample data/config.json
 ssh-keygen -t rsa -f data/rsa
 
 # Optional: create the service
-sudo cp ssh.conf /etc/supervisor/conf.d/
+sudo cp -r etc/supervisor /etc
 sudo sed -i 's#<.*>#'$(pwd)'#g' /etc/supervisor/conf.d/ssh.conf
 
 # Optional: port forward 22 -> 8222
