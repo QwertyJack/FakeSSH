@@ -1,4 +1,9 @@
+[DEFAULT]
+bantime  = 6000
+findtime  = 6000
+maxretry = 3
+
 [sshf]
-port    = 8222
+port    = ssh,2222,8222
 logpath = /home/jack/git/FakeSSH/data/log
 enabled = true
